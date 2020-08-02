@@ -1,14 +1,20 @@
 package br.com.iot.producer.simulator.api.model.exception;
 
-import lombok.Builder;
-import lombok.Value;
+public class ErrorField {
 
-@Value
-@Builder
-public class ErrorFields {
+    private final String field;
+    private final String description;
 
-    private String field;
-    private String description;
+    public ErrorField(String field, String description) {
+        this.field = field;
+        this.description = description;
+    }
 
+    public String getField() {
+        return field;
+    }
 
+    public String getDescription() {
+        return description;
+    }
 }

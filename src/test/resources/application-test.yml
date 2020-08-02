@@ -3,12 +3,15 @@ server:
   context-path: /producer-api
 
 spring:
-  profiles: local
+  main:
+    banner-mode: off
+    lazy-initialization: true
+  profiles: test
 
 logging:
   level:
-    root: INFO
+    root: OFF
+    org.springframework: OFF
     br.com.iot: DEBUG
   pattern:
-    console: '%highlight(<<%-5level>>) %d{dd-MM-yy HH:mm:ss.SSS} [%thread] %cyan(%logger{-1}) - %msg%n'
-    file: '%<<%-5level>> %d{dd-MM-yy HH:mm:ss.SSS} [%thread] %logger{-1} - %msg%n'
+    console: '%highlight(<<%-5level>>) %d{HH:mm:ss.SSS} [%thread] %cyan(%c{0}) - %msg%n %ex{short}'
