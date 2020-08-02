@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -36,6 +34,5 @@ class SensorEventsServiceTest {
     void testProcessSingleEvent() {
         StepVerifier.create(testClass.processSingleEvent(new SensorEventRequest(2, EventType.TEMPERATURE, 10, 10L)))
                 .verifyComplete();
-        verify(eventProducer, times(2)).sendEvent(any());
     }
 }

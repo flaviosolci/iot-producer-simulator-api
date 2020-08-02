@@ -1,39 +1,30 @@
 package br.com.iot.producer.simulator.api.config;
 
-import br.com.iot.producer.simulator.api.config.converter.StringToEnumConverter;
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.format.FormatterRegistry;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
-import java.nio.charset.StandardCharsets;
-
-@Component
+@EnableWebFlux
+@Configuration
+@Profile("!test")
 public class WebFluxConfig implements WebFluxConfigurer {
 
-    @Override
-    public Validator getValidator() {
-        return localValidatorFactoryBean();
+    private final Jackson2JsonEncoder encoder;
+    private final Jackson2JsonDecoder decoder;
+
+    public WebFluxConfig(Jackson2JsonEncoder encoder, Jackson2JsonDecoder decoder) {
+        this.encoder = encoder;
+        this.decoder = decoder;
     }
 
     @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(StringToEnumConverter.eventTypeConverter());
+    public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
+        configurer.defaultCodecs().jackson2JsonEncoder(encoder);
+        configurer.defaultCodecs().jackson2JsonDecoder(decoder);
     }
 
-    private MessageSource messageSource() {
-        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages/ErrorResource");
-        messageSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
-        return messageSource;
-    }
-
-    private LocalValidatorFactoryBean localValidatorFactoryBean() {
-        final LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
-        factoryBean.setValidationMessageSource(messageSource());
-        return factoryBean;
-    }
 }

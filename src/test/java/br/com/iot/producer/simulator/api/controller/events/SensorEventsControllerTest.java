@@ -1,6 +1,7 @@
 package br.com.iot.producer.simulator.api.controller.events;
 
 import br.com.iot.producer.simulator.api.ApplicationStarter;
+import br.com.iot.producer.simulator.api.config.WebSecurityConfigStub;
 import br.com.iot.producer.simulator.api.controller.events.request.SensorEventRequest;
 import br.com.iot.producer.simulator.api.model.EventType;
 import br.com.iot.producer.simulator.api.service.SensorEventsService;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @WebFluxTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = ApplicationStarter.class)
+@ContextConfiguration(classes = {ApplicationStarter.class, WebSecurityConfigStub.class})
 class SensorEventsControllerTest {
 
     private WebTestClient webClient;
@@ -36,7 +37,10 @@ class SensorEventsControllerTest {
 
     @BeforeEach
     void setUp() {
-        webClient = WebTestClient.bindToApplicationContext(applicationContext).configureClient().baseUrl("/sensor/events").build();
+        webClient = WebTestClient.bindToApplicationContext(applicationContext)
+                .configureClient()
+                .baseUrl("/sensor/events")
+                .build();
         when(sensorEventsService.produceEvents(anyList())).thenReturn(Mono.empty());
     }
 
