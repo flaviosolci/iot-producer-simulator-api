@@ -19,8 +19,6 @@ import reactor.core.publisher.Mono;
 public class WebSecurityConfig {
 
     private final ContextPathFilter contextPathFilter;
-    @Value("${spring.security.oauth2.resourceserver.jwk.issuer-uri}")
-    private String issuerUri;
 
     public WebSecurityConfig(@Value("${spring.webflux.base-path}") final String contextPath) {
         this.contextPathFilter = new ContextPathFilter(contextPath);
@@ -38,11 +36,9 @@ public class WebSecurityConfig {
                 .pathMatchers("/health").permitAll()
                 .anyExchange().hasAuthority("SCOPE_admin")
                 .and()
-                .exceptionHandling()
+                .oauth2ResourceServer()
                 .accessDeniedHandler((exchange, denied) -> Mono.error(new UnauthorizedException(denied)))
                 .authenticationEntryPoint((exchange, e) -> Mono.error(new UnauthenticatedException(e)))
-                .and()
-                .oauth2ResourceServer()
                 .jwt()
                 .and().and()
                 .build();
@@ -51,7 +47,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public ReactiveJwtDecoder jwtDecoder() {
+    public ReactiveJwtDecoder jwtDecoder(@Value("${spring.security.oauth2.resourceserver.jwk.issuer-uri}") String issuerUri) {
         return ReactiveJwtDecoders.fromOidcIssuerLocation(issuerUri);
     }
 }
